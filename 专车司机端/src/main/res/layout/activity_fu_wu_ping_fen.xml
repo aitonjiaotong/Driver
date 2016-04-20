@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.aiton.bamin.driver.activity.FuWuPingFenActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout39"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_hight"
+        android:background="@color/white"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/textView196"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="服务评分"
+            android:textSize="@dimen/title_textsize"/>
+
+        <ImageView
+            android:id="@+id/imageView_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="20dp"
+            android:src="@mipmap/icon_back"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout39"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="问卷评分"
+            android:textSize="12dp"
+            android:layout_margin="15dp"
+            android:id="@+id/textView197"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂无评分"
+            android:textSize="40dp"
+            android:id="@+id/textView198"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="击败了全国%0的司机"
+            android:layout_margin="5dp"
+            android:id="@+id/textView199"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="这样做会更好"
+            android:textSize="@dimen/normal_textsize"
+            android:layout_margin="15dp"
+            android:textColor="@color/aiton_basic_color"
+            android:id="@+id/textView200"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请保持车内整洁卫生,千万不要在车内吸烟"
+            android:padding="5dp"
+            android:id="@+id/textView201"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="乘客上下车前，别忘记主动为乘客开门"
+            android:padding="5dp"
+            android:id="@+id/textView202"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="不熟悉线路没关系，通过导航帮助自己"
+            android:padding="5dp"
+            android:id="@+id/textView203"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="记得使用官方指定水，充电器等物品"
+            android:padding="5dp"
+            android:id="@+id/textView204"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="不要通过电话联系乘客索要好评"
+            android:padding="5dp"
+            android:id="@+id/textView205"
+            android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
+</RelativeLayout>

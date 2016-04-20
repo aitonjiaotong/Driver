@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@mipmap/ic_ticket_note"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/imageView6"/>
+    </LinearLayout>
+
+    <TextView
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="确认乘客已经上车，开始计费"
+        android:id="@+id/textView23"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/getpassager_btn_cancle"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="取消"
+            android:id="@+id/button_cancle"/>
+
+        <Button
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/getpassager_btn_ok"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="确定"
+            android:id="@+id/button_ok"/>
+    </LinearLayout>
+</LinearLayout>
