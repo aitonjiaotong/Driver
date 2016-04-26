@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.aiton.bamin.driver"
           xmlns:android="http://schemas.android.com/apk/res/android">
-
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -24,6 +23,7 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:name=".app.App"
         android:allowBackup="true"
@@ -40,11 +40,7 @@
         <activity android:name=".activity.MapActivity">
         </activity>
 
-        <service
-            android:name="com.baidu.location.f"
-            android:enabled="true"
-            android:process=":remote">
-        </service>
+        <service android:name="com.baidu.navi.location.f" android:enabled="true"/>
 
         <activity android:name=".activity.CommitOrderActivity">
         </activity>
@@ -81,6 +77,9 @@
         </activity>
         <activity android:name=".activity.FuWuPingFenActivity">
         </activity>
+        <activity
+            android:name=".activity.BNavigatorActivity"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"/>
     </application>
 
 </manifest>

@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -32,14 +30,15 @@ import com.aiton.administrator.shane_library.shane.utils.VolleyListener;
 import com.aiton.bamin.driver.R;
 import com.aiton.bamin.driver.contant.Contant;
 import com.aiton.bamin.driver.contant.VersionAndHouTaiIsCanUse;
-import com.aiton.bamin.driver.modle.Voice;
 import com.aiton.bamin.driver.util.ScreenUtils;
 import com.android.volley.VolleyError;
-import com.baidu.apistore.sdk.ApiCallBack;
-import com.baidu.apistore.sdk.ApiStoreSDK;
-import com.baidu.apistore.sdk.network.Parameters;
+import com.baidu.lbsapi.auth.LBSAuthManagerListener;
+import com.baidu.navisdk.BNaviEngineManager;
+import com.baidu.navisdk.BaiduNaviManager;
+import com.baidu.navisdk.comapi.tts.BNTTSPlayer;
+import com.baidu.navisdk.comapi.tts.BNavigatorTTSPlayer;
+import com.baidu.navisdk.comapi.tts.IBNTTSPlayerListener;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,19 +69,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //检查服务器是否存活和当前版本是否可用
         checkVersionAndHouTaiIsCanUse();
         getResoure();
+        initDaoHang();
         findID();
         initUI();
         setListener();
     }
+
+    private void initDaoHang() {
+        //初始化导航引擎
+        BaiduNaviManager.getInstance().initEngine(this, getSdcardDir(),
+                mNaviEngineInitListener, new LBSAuthManagerListener() {
+                    @Override
+                    public void onAuthResult(int status, String msg) {
+                        String str = null;
+                        if (0 == status) {
+                            str = "key校验成功!";
+                        } else {
+                            str = "key校验失败, " + msg;
+                        }
+                        Toast.makeText(MainActivity.this, str,
+                                Toast.LENGTH_LONG).show();
+                        Log.e("onAuthResult", "str" + str);
+                    }
+                });
+    }
+
+    private BNaviEngineManager.NaviEngineInitListener mNaviEngineInitListener = new BNaviEngineManager.NaviEngineInitListener() {
+        public void engineInitSuccess() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, "百度导航初始化成功", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            Log.e("engineInitSuccess", "百度导航初始化成功");
+        }
+
+        public void engineInitStart() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, "百度导航初始化开始", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            Log.e("engineInitSuccess", "百度导航初始化开始");
+        }
+
+        public void engineInitFail() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, "百度导航初始化失败", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            Log.e("engineInitSuccess", "百度导航初始化失败");
+        }
+    };
+
+    private String getSdcardDir() {
+        if (Environment.getExternalStorageState().equalsIgnoreCase(
+                Environment.MEDIA_MOUNTED)) {
+            return Environment.getExternalStorageDirectory().toString();
+        }
+        return null;
+    }
+
     private void initSp() {
         SharedPreferences sp = getSharedPreferences("isLogin", Context.MODE_PRIVATE);
         mId = sp.getString("id", "");
         mDeviceId = sp.getString("DeviceId", "");
     }
+
     private void checkVersionAndHouTaiIsCanUse() {
         String url = Contant.HOST + "/bmpw/check/live";
         Map<String, String> map = new HashMap<>();
-        map.put("flag","11");
+        map.put("flag", "11");
         HTTPUtils.post(MainActivity.this, url, map, new VolleyListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
@@ -107,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
     /**
      * 检查是否在其他设备上登陆
      */
@@ -115,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String url = Contant.HOST + "/bmpw/account/findLogin_id";
             Map<String, String> map = new HashMap<>();
             map.put("account_id", mId);
-            map.put("flag","11");
+            map.put("flag", "11");
             HTTPUtils.post(MainActivity.this, url, map, new VolleyListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
@@ -130,8 +195,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
         }
     }
+
     /**
      * 弹出未登录按钮跳转登录界面并清除登录信息
+     *
      * @param messageTxt
      * @param iSeeTxt
      */
@@ -161,10 +228,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-    private void checkUpGrade()
-    {
+
+    private void checkUpGrade() {
         UpgradeUtils.checkUpgrade(MainActivity.this, Contant.URL.UP_GRADE);
     }
+
     private void getHeight() {
         mLocation = new int[2];
         mRela_lianjie.getLocationOnScreen(mLocation);
@@ -203,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent();
         switch (v.getId()) {
             case R.id.textView_more:
-                intent.setClass(MainActivity.this,MoreActivity.class);
+                intent.setClass(MainActivity.this, MoreActivity.class);
                 startActivity(intent);
                 break;
             case R.id.textView_mine:
@@ -211,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.rela_startMap:
+
                 intent.setClass(MainActivity.this, MapActivity.class);
                 startActivity(intent);
                 break;
@@ -220,7 +289,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.textView_shoufache:
                 isShouFaChe = !isShouFaChe;
                 if (isShouFaChe) {
-                    outVoice("开始接单了");
+//                    outVoice("开始接单了");
+                    // 初始化TTS. 开发者也可以使用独立TTS模块，不用使用导航SDK提供的TTS
+                    BNTTSPlayer.initPlayer();
+                    BNTTSPlayer.playTTSText("开始接单了！", 1);
+                    //设置TTS播放回调
+                    BNavigatorTTSPlayer.setTTSPlayerListener(new IBNTTSPlayerListener() {
+
+                        @Override
+                        public int playTTSText(String arg0, int arg1) {
+                            //开发者可以使用其他TTS的API
+
+                            return BNTTSPlayer.playTTSText("开始接单了", arg1);
+                        }
+
+                        @Override
+                        public void phoneHangUp() {
+                            //手机挂断
+                        }
+
+                        @Override
+                        public void phoneCalling() {
+                            //通话中
+                        }
+
+                        @Override
+                        public int getTTSState() {
+                            //开发者可以使用其他TTS的API,
+                            return BNTTSPlayer.getTTSState();
+                        }
+                    });
                     mTextView_shoufache.setBackground(mDrawable_circle_gray);
                     mTextView_shoufache.setTextColor(mColor_white);
                     mTextView_shoufache.setText("收车");
@@ -235,49 +333,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-    private void outVoice(String msg) {
-        Parameters para = new Parameters();
-        para.put("text",msg );
-        para.put("ctp", "1");
-        para.put("per", "0");
-        ApiStoreSDK.execute("http://apis.baidu.com/apistore/baidutts/tts", ApiStoreSDK.GET, para, new ApiCallBack() {
-            @Override
-            public void onSuccess(int status, String responseString) {
-                Log.e("onSuccess ", "onSuccess " + responseString);
-                System.out.println(responseString);
-                Voice voice = GsonUtils.parseJSON(responseString, Voice.class);
-                String retMsg = voice.getRetData();
-                try {
-                    String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    File file = new File(absolutePath + "/voice");
-                    if (!file.exists()) {
-                        file.mkdirs();
-                    }
-                    String s = file + "/voice.mp3";
-                    decoderBase64File(retMsg, s);
-                    File file1 = new File(s);
-                    Uri uri = Uri.fromFile(file1);
-                    MediaPlayer mediaPlayer = MediaPlayer.create(MainActivity.this, uri);
-                    if (mediaPlayer != null) {
-                        mediaPlayer.start();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+//    private void outVoice(String msg) {
+//        Parameters para = new Parameters();
+//        para.put("text",msg );
+//        para.put("ctp", "1");
+//        para.put("per", "0");
+//        ApiStoreSDK.execute("http://apis.baidu.com/apistore/baidutts/tts", ApiStoreSDK.GET, para, new ApiCallBack() {
+//            @Override
+//            public void onSuccess(int status, String responseString) {
+//                Log.e("onSuccess ", "onSuccess " + responseString);
+//                System.out.println(responseString);
+//                Voice voice = GsonUtils.parseJSON(responseString, Voice.class);
+//                String retMsg = voice.getRetData();
+//                try {
+//                    String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+//                    File file = new File(absolutePath + "/voice");
+//                    if (!file.exists()) {
+//                        file.mkdirs();
+//                    }
+//                    String s = file + "/voice.mp3";
+//                    decoderBase64File(retMsg, s);
+//                    File file1 = new File(s);
+//                    Uri uri = Uri.fromFile(file1);
+//                    MediaPlayer mediaPlayer = MediaPlayer.create(MainActivity.this, uri);
+//                    if (mediaPlayer != null) {
+//                        mediaPlayer.start();
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//                Log.e("onComplete ", "onComplete ");
+//            }
+//
+//            @Override
+//            public void onError(int status, String responseString, Exception e) {
+//                Log.e("onError ", "onError " + responseString);
+//            }
+//
+//        });
+//    }
 
-            @Override
-            public void onComplete() {
-                Log.e("onComplete ", "onComplete ");
-            }
-
-            @Override
-            public void onError(int status, String responseString, Exception e) {
-                Log.e("onError ", "onError " + responseString);
-            }
-
-        });
-    }
     /**
      * <p>将base64字符解码保存文件</p>
      *
@@ -291,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         out.write(buffer);
         out.close();
     }
+
     private void moNiJieDan() {
         //模拟接单
         new Thread(new Runnable() {
@@ -301,9 +401,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (isShouFaChe){
+                            if (isShouFaChe) {
+//                                startCalcRoute();
                                 setpopupWindows();
-                                outVoice("联谊大厦到思明区莲岳路松柏大厦对面，距离您还有0.3公里，点击开启导航");
+//                                outVoice("联谊大厦到思明区莲岳路松柏大厦对面，距离您还有0.3公里，点击进入地图");
                                 mRela_lianjie.setBackgroundResource(R.mipmap.zhipai2x);
                             }
                         }
@@ -347,19 +448,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 双击退出应用
      */
     private long currentTime = 0;
+
     public boolean onKeyDown(int keyCode, android.view.KeyEvent event) {
-        if(keyCode== KeyEvent.KEYCODE_BACK){
-            if(System.currentTimeMillis()-currentTime>1000){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (System.currentTimeMillis() - currentTime > 1000) {
                 Toast toast = Toast.makeText(MainActivity.this, "双击退出应用", Toast.LENGTH_SHORT);
                 toast.show();
-                currentTime=System.currentTimeMillis();
+                currentTime = System.currentTimeMillis();
                 return false;
-            }else{
+            } else {
                 return super.onKeyDown(keyCode, event);
             }
         }
         return super.onKeyDown(keyCode, event);
-    };
+    }
+
+    ;
+
     //dialog提示
     private void setDialogCkeck(String messageTxt, String iSeeTxt) {
         View commit_dialog = getLayoutInflater().inflate(R.layout.commit_dialog, null);
