@@ -35,15 +35,21 @@ import com.android.volley.VolleyError;
 import com.baidu.lbsapi.auth.LBSAuthManagerListener;
 import com.baidu.navisdk.BNaviEngineManager;
 import com.baidu.navisdk.BaiduNaviManager;
+import com.baidu.navisdk.CommonParams;
+import com.baidu.navisdk.comapi.mapcontrol.BNMapController;
+import com.baidu.navisdk.comapi.mapcontrol.MapParams;
+import com.baidu.navisdk.comapi.routeplan.BNRoutePlaner;
+import com.baidu.navisdk.comapi.routeplan.IRouteResultObserver;
+import com.baidu.navisdk.comapi.routeplan.RoutePlanParams;
 import com.baidu.navisdk.comapi.tts.BNTTSPlayer;
-import com.baidu.navisdk.comapi.tts.BNavigatorTTSPlayer;
-import com.baidu.navisdk.comapi.tts.IBNTTSPlayerListener;
+import com.baidu.navisdk.model.NaviDataEngine;
+import com.baidu.navisdk.model.RoutePlanModel;
+import com.baidu.navisdk.model.datastruct.RoutePlanNode;
+import com.baidu.navisdk.ui.widget.RoutePlanObserver;
 
-import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import Decoder.BASE64Decoder;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -293,32 +299,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // 初始化TTS. 开发者也可以使用独立TTS模块，不用使用导航SDK提供的TTS
                     BNTTSPlayer.initPlayer();
                     BNTTSPlayer.playTTSText("开始接单了！", 1);
-                    //设置TTS播放回调
-                    BNavigatorTTSPlayer.setTTSPlayerListener(new IBNTTSPlayerListener() {
-
-                        @Override
-                        public int playTTSText(String arg0, int arg1) {
-                            //开发者可以使用其他TTS的API
-
-                            return BNTTSPlayer.playTTSText("开始接单了", arg1);
-                        }
-
-                        @Override
-                        public void phoneHangUp() {
-                            //手机挂断
-                        }
-
-                        @Override
-                        public void phoneCalling() {
-                            //通话中
-                        }
-
-                        @Override
-                        public int getTTSState() {
-                            //开发者可以使用其他TTS的API,
-                            return BNTTSPlayer.getTTSState();
-                        }
-                    });
                     mTextView_shoufache.setBackground(mDrawable_circle_gray);
                     mTextView_shoufache.setTextColor(mColor_white);
                     mTextView_shoufache.setText("收车");
@@ -332,63 +312,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
         }
-    }
-//    private void outVoice(String msg) {
-//        Parameters para = new Parameters();
-//        para.put("text",msg );
-//        para.put("ctp", "1");
-//        para.put("per", "0");
-//        ApiStoreSDK.execute("http://apis.baidu.com/apistore/baidutts/tts", ApiStoreSDK.GET, para, new ApiCallBack() {
-//            @Override
-//            public void onSuccess(int status, String responseString) {
-//                Log.e("onSuccess ", "onSuccess " + responseString);
-//                System.out.println(responseString);
-//                Voice voice = GsonUtils.parseJSON(responseString, Voice.class);
-//                String retMsg = voice.getRetData();
-//                try {
-//                    String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-//                    File file = new File(absolutePath + "/voice");
-//                    if (!file.exists()) {
-//                        file.mkdirs();
-//                    }
-//                    String s = file + "/voice.mp3";
-//                    decoderBase64File(retMsg, s);
-//                    File file1 = new File(s);
-//                    Uri uri = Uri.fromFile(file1);
-//                    MediaPlayer mediaPlayer = MediaPlayer.create(MainActivity.this, uri);
-//                    if (mediaPlayer != null) {
-//                        mediaPlayer.start();
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//                Log.e("onComplete ", "onComplete ");
-//            }
-//
-//            @Override
-//            public void onError(int status, String responseString, Exception e) {
-//                Log.e("onError ", "onError " + responseString);
-//            }
-//
-//        });
-//    }
-
-    /**
-     * <p>将base64字符解码保存文件</p>
-     *
-     * @param base64Code
-     * @param targetPath
-     * @throws Exception
-     */
-    public static void decoderBase64File(String base64Code, String targetPath) throws Exception {
-        byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
-        FileOutputStream out = new FileOutputStream(targetPath);
-        out.write(buffer);
-        out.close();
     }
 
     private void moNiJieDan() {
@@ -404,18 +327,95 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             if (isShouFaChe) {
 //                                startCalcRoute();
                                 setpopupWindows();
-//                                outVoice("联谊大厦到思明区莲岳路松柏大厦对面，距离您还有0.3公里，点击进入地图");
                                 mRela_lianjie.setBackgroundResource(R.mipmap.zhipai2x);
                             }
                         }
                     });
+                    // 初始化TTS. 开发者也可以使用独立TTS模块，不用使用导航SDK提供的TTS
+                    BNTTSPlayer.initPlayer();
+                                        //设置TTS播放回调
+                    BNTTSPlayer.playTTSText("联谊大厦到安兜小学，距离您有0.3公里，点击进入地图",1);
+//                                outVoice("联谊大厦到思明区莲岳路松柏大厦对面，距离您还有0.3公里，点击进入地图");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
+    private void startCalcRoute() {
+        int sX = 0, sY = 0, eX = 0, eY = 0;
+        try {
+            sX = 2451233;
+            sY = 11814207;
+            eX = 2452624;
+            eY = 11814343;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        //起点
+        RoutePlanNode startNode = new RoutePlanNode(sX, sY,
+                RoutePlanNode.FROM_MAP_POINT, "联谊大厦", "联谊大厦");
+        //终点
+        RoutePlanNode endNode = new RoutePlanNode(eX, eY,
+                RoutePlanNode.FROM_MAP_POINT, "安兜小学", "安兜小学");
+        //将起终点添加到nodeList
+        ArrayList<RoutePlanNode> nodeList = new ArrayList<RoutePlanNode>(2);
+        nodeList.add(startNode);
+        nodeList.add(endNode);
+        BNRoutePlaner.getInstance().setObserver(new RoutePlanObserver(this, null));
+        //设置算路方式
+        BNRoutePlaner.getInstance().setCalcMode(RoutePlanParams.NE_RoutePlan_Mode.ROUTE_PLAN_MOD_MIN_TIME);
+        // 设置算路结果回调
+        BNRoutePlaner.getInstance().setRouteResultObserver(mRouteResultObserver);
+        // 设置起终点并算路
+        boolean ret = BNRoutePlaner.getInstance().setPointsToCalcRoute(
+                nodeList, CommonParams.NL_Net_Mode.NL_Net_Mode_OnLine);
+        if (!ret) {
+            Toast.makeText(this, "规划失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private RoutePlanModel mRoutePlanModel = null;
+    private IRouteResultObserver mRouteResultObserver = new IRouteResultObserver() {
+
+        @Override
+        public void onRoutePlanYawingSuccess() {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onRoutePlanYawingFail() {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onRoutePlanSuccess() {
+            // TODO Auto-generated method stub
+            BNMapController.getInstance().setLayerMode(
+                    MapParams.Const.LayerMode.MAP_LAYER_MODE_ROUTE_DETAIL);
+            mRoutePlanModel = (RoutePlanModel) NaviDataEngine.getInstance()
+                    .getModel(CommonParams.Const.ModelName.ROUTE_PLAN);
+        }
+
+        @Override
+        public void onRoutePlanFail() {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onRoutePlanCanceled() {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onRoutePlanStart() {
+            // TODO Auto-generated method stub
+
+        }
+
+    };
     private void setpopupWindows() {
         View inflate = getLayoutInflater().inflate(R.layout.popupwindow_zhipai, null);
         inflate.findViewById(R.id.textView_canclePopup).setOnClickListener(this);
