@@ -17,8 +17,11 @@ package com.aiton.administrator.shane_library.shane.utils;
  */
 
 import android.content.Context;
+import android.util.Log;
 
+import com.aiton.administrator.shane_library.github.volley.UTFStringRequest;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,7 +29,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.aiton.administrator.shane_library.github.volley.UTFStringRequest;
+
 import java.util.Map;
 
 /**
@@ -56,6 +59,7 @@ public class HTTPUtils {
 					}
 				}, new Response.ErrorListener() {
 					public void onErrorResponse(VolleyError error) {
+						Log.e("onErrorResponse", "超时时间"+error.getNetworkTimeMs());
 						listener.onErrorResponse(error);
 					}
 				}) {
@@ -72,7 +76,8 @@ public class HTTPUtils {
 		// 请用缓存
 		myReq.setShouldCache(true);
 		// 设置缓存时间10分钟
-		// myReq.setCacheTime(10*60);
+//		 myReq.setCacheTime(10*60);
+		myReq.setRetryPolicy(new DefaultRetryPolicy(60*1000,3,1.0f));
 		mRequestQueue.add(myReq);
 	}
 
@@ -85,12 +90,18 @@ public class HTTPUtils {
 					}
 				}, new Response.ErrorListener() {
 					public void onErrorResponse(VolleyError error) {
+						Log.e("onErrorResponse", "超时时间"+error.getNetworkTimeMs());
 						listener.onErrorResponse(error);
 					}
 				});
 		if (mRequestQueue == null) {
 			init(context);
 		}
+		// 请用缓存
+		myReq.setShouldCache(true);
+		// 设置缓存时间10分钟
+//		 myReq.setCacheTime(10*60);
+		myReq.setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 3, 1.0f));
 		mRequestQueue.add(myReq);
 	}
 

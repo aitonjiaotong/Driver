@@ -116,6 +116,14 @@
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
+    <FrameLayout
+        android:id="@+id/mapview_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relativeLayout3">
+
+    </FrameLayout>
+
     <Button
         android:id="@+id/button_getPassager"
         android:layout_width="match_parent"
@@ -126,14 +134,6 @@
         android:text="接到乘客"
         style="@style/btn_style"
         android:visibility="visible"/>
-
-    <FrameLayout
-        android:id="@+id/mapview_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout3">
-
-    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/rela_onTheRoad"
